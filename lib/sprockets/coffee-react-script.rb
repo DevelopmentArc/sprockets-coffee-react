@@ -7,14 +7,17 @@ module Sprockets
   # Preprocessor that runs CJSX source files through coffee-react-transform
   # then compiles with coffee-script
   class CoffeeReactScript < Tilt::Template
-    CJSX_EXTENSION = /\.cjsx[^\/]*?$/
+    CJSX_EXTENSION = /\.(:?cjsx|coffee)[^\/]*?$/
     CJSX_PRAGMA = /^\s*#[ \t]*@cjsx/i
 
     def prepare
     end
 
     def evaluate(scope, locals, &block)
+      Rails.logger.ap "BLAH BLAH BLAH"
       if scope.pathname.to_s =~ /\.coffee\.cjsx/
+        ::CoffeeReact.transform(data)
+      elsif scope.pathname.to_s =~ /\.coffee\.jsx/
         ::CoffeeReact.transform(data)
       elsif scope.pathname.to_s =~ CJSX_EXTENSION || data =~ CJSX_PRAGMA
         ::CoffeeScript.compile(::CoffeeReact.transform(data))
